@@ -1,0 +1,15 @@
+@startuml APP FLOW
+skinparam backgroundColor #FFFFF0
+
+group Authentication
+    PFM -> Server: Authentication Request
+    Server --> PFM: Authentication Accepted [200]
+    
+    alt Authentication failed 
+    
+    Server --> PFM: Authentication Failed [400] | [403] 
+    
+    end 
+end
+
+@enduml
