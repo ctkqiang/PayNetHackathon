@@ -9,6 +9,8 @@ This project is part of the **PayNet Hackathon**, focusing on **Personal Financi
 
 Our solution is designed to tackle this challenge by leveraging modern technologies to provide innovative, user-centric financial tools.
 
+Reference: https://jomhack.com/payhack2024/
+
 ---
 
 ## Project Structure
