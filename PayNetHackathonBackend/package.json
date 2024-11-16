@@ -1,0 +1,48 @@
+{
+  "name": "paynethackathonbackend",
+  "version": "1.0.0",
+  "description": "PayNet Hackathon RESTAPI for Challenge 1: Personal Finance Management",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "pm2 start dist/index.js --watch",
+    "dev": "nodemon src/index.ts",
+    "build": "npx tsc",
+    "test": "mocha --require ts-node/register test/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctkqiang/PayNetHackathon.git"
+  },
+  "keywords": [
+    "hackathon",
+    "malaysia",
+    "paynet",
+    "duitnow",
+    "2024",
+    "fatina",
+    "gabriel",
+    "ctkqiang"
+  ],
+  "author": "Bulldozers",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ctkqiang/PayNetHackathon/issues"
+  },
+  "homepage": "https://github.com/ctkqiang/PayNetHackathon#readme",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "mocha": "^10.8.2",
+    "nodemon": "^3.1.7",
+    "pm2": "^5.4.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3"
+  }
+}
