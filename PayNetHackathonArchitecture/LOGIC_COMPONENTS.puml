@@ -78,6 +78,7 @@ package Backend {
             - calculateWarAccumulationRatio(TotalAssets, TotalLiabilities): string
             - calculateCurrentCashflow(TotalInflow - TotalOutflow): string
             - calculateCurrentNetWorth(TotalAssets - TotalLiabilities): string
+            - calculatePersistency(Cashflow + Networth / Total Debt): string
         }
     }
 

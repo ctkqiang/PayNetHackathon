@@ -56,7 +56,7 @@ The **App Flow** diagram provides a visual representation of how the **Paynet PF
 
 The **Logic Components** diagram provides a structural view of the main backend and frontend classes, including their relationships and methods.
 
-![Logic Components](notyet)
+![Logic Components](Logic_Components.png)
 
 ### Backend:
 
