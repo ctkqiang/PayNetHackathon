@@ -50,12 +50,23 @@ package Backend {
 
         struct AccountOverview {
             + id: int
-            + current_account: list[string]
-            + saving_account: list[string]
+            + current_account: number
+            + saving_account: number
             + term_deposit: string
             + money_market: string
             + credit_card: CreditCard
             + personal_loans: list[PersonalLoans]
+            + income: Income
+        }
+
+        enum IncomeType {
+            + ACTIVE
+            + PASSIVE
+        }
+
+        struct Income {
+            + id: number
+            + incom_type: IncomeType
         }
 
         struct PersonalLoans {
