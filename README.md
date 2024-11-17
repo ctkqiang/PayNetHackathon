@@ -35,7 +35,7 @@ The frontend handles the user interface and interactions.
 
 ### Documentation
 Project-related documents, including reports and design specs, can be found in the `PayNetHackathonDocuments` folder.
-👉 [Project Documentation](./PayNetHackathonDocuments/)
+👉 [Project Documentation](./PayNetHackathonDocuments/README.md)
 
 ---
 

@@ -1,0 +1,78 @@
+@startuml Logic Components
+
+!theme mars
+
+skinparam handwritten false
+skinparam shadowing false
+skinparam backgroundColor #FFFFF0
+
+package Backend {
+    class DatabaseHandler {
+        - initDatabases
+        + writeUser(User)
+        + deleteUser(User.name)
+        + updateUser(User)
+        + userFinancialProfile(User)
+        --Getters--
+        + getUser
+        + getUserMetadata
+        --Setters--
+        + setName
+        + setEmail
+        + setPassword
+    }
+
+    struct User {
+        + name
+        + password
+        + email
+    }
+
+    enum Categories {
+        + CURRENT_ACCOUNT: String
+        + SAVINGS_ACCOUNT: String
+        + TERM_DEPOSIT: String
+        + MONEY_MARKET: String
+        + CREDIT_CARD: String
+        + PERSONAL_LOANS: String
+        + PERSONAL_INVESTMENTS: String
+        + MORTGAGE: String
+        + HIRE_PURCHASE: String
+        + INSURANCE: String
+        + MICRO_LOANS: String
+        + OTHER: String
+    }
+
+    class FinancialAnalysis {
+        
+    }
+
+    User o-- DatabaseHandler
+    Categories o-- FinancialAnalysis
+    Categories o-- DatabaseHandler
+}
+
+package Frontend {
+    class Authentication {
+        # initAuthenticationServices
+        + register(User)
+        + requestAccountDeletion
+        --Getters--
+        + getName
+        + getEmail
+        --Setters--
+        + setName
+        + setEmail
+        + setPassword
+    }
+
+    struct User {
+        + name
+        + password
+        + email
+    }
+
+    User o-- Authentication
+}
+
+@enduml
