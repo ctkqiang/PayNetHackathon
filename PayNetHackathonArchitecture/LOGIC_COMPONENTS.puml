@@ -82,6 +82,14 @@ package Backend {
             + totalt_card_credit_limit: float
         }
 
+        enum FinancialStatus {
+            + HEALTHY
+            + MANAGEABLE
+            + RISKY
+            + CLOSE_TO_BANKRUPTCY
+            + BANKRUPT 
+        }
+
         class FinancialAnalysis {
             + setAccount(Categories, User): void
             + getAccountOverview(User): AccountOverview

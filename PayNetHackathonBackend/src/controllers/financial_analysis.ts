@@ -1,7 +1,8 @@
 import { AccountOverview } from './../models/account_overview.interface';
 
 export class FinancialAnalysis {
-    private account: AccountOverview;
+    private static account: AccountOverview;
+    private static persistency: number | string;
 
     /**
      * Constructor to initialize the FinancialAnalysis with an AccountOverview.
@@ -35,7 +36,11 @@ export class FinancialAnalysis {
     public static get userCashflow(): number | string {
         const totalCashInFlow = this.account.income - this.userLiabilities();
         
-        return this.userNetWorth;
+        return this.userNetWorth - totalCashInFlow;
+    }
+
+    public static set userPersistency() : number | string {
+        return this.persistency;
     }
 
     private static calculateDSR() : void {}
@@ -46,5 +51,14 @@ export class FinancialAnalysis {
 
     private static calculateCurrentNetWorth() : void {}
 
-    private static calculatePersistency() : void {}
+    private static calculatePersistency(current_spending: number) : void  {
+        const totalAssets = this.userCashflow + this.userNetWorth;
+        const totalDebts = this.userLiabilities + current_spending;
+
+        const pr = totalAssets / totalDebts;
+
+        this.persistency = `${pr}%`;
+    }
+
+    private static isPersistencyGood(percentage): string {}
 }
