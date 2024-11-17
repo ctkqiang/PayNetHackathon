@@ -7,61 +7,98 @@ skinparam shadowing false
 skinparam backgroundColor #FFFFF0
 
 package Backend {
-    class DatabaseHandler {
-        - initDatabases
-        + writeUser(User)
-        + deleteUser(User.name)
-        + updateUser(User)
-        + userFinancialProfile(User)
-        --Getters--
-        + getUser: string
-        + getUserMetadata: map[string, string]
-        --Setters--
-        + setName: void
-        + setEmail: void
-        + setPassword: void
+    package Database <<Database>> #LightYellow {
+        class DatabaseHandler {
+            - initDatabases
+            + writeUser(User)
+            + deleteUser(User.name)
+            + updateUser(User)
+            + userFinancialProfile(User)
+            --Getters--
+            + getUser: string
+            + getUserMetadata: map[string, string]
+            --Setters--
+            + setName: void
+            + setEmail: void
+            + setPassword: void
+        }
+
+        struct User {
+            + id: int
+            + name: string
+            + password: string
+            + email: string
+            + createdAt: Date
+        }
     }
 
-    struct User {
-        + id: int
-        + name: string
-        + password: string
-        + email: string
-        + createdAt: Date
+    package Functions {
+        enum Categories {
+            + CURRENT_ACCOUNT: string
+            + SAVINGS_ACCOUNT: string
+            + TERM_DEPOSIT: string
+            + MONEY_MARKET: string
+            + CREDIT_CARD: string
+            + PERSONAL_LOANS: string
+            + PERSONAL_INVESTMENTS: string
+            + MORTGAGE: string
+            + HIRE_PURCHASE: string
+            + INSURANCE: string
+            + MICRO_LOANS: string
+            + OTHER: string
+        }
+
+        struct AccountOverview {
+            + id: int
+            + current_account: list[string]
+            + saving_account: list[string]
+            + term_deposit: string
+            + money_market: string
+            + credit_card: CreditCard
+            + personal_loans: list[PersonalLoans]
+        }
+
+        struct PersonalLoans {
+            + id: int
+            + name: string
+            + loan_amount: float
+            + interest: float
+        }
+
+        struct CreditCard {
+            + id: int
+            + credit_card_count: int
+            + totalt_card_credit_limit: float
+        }
+
+        class FinancialAnalysis {
+            + setAccount(Categories, User): void
+            + getAccountOverview(User): AccountOverview
+            - calculateDebtServiceRatio(MonthLyDebtsPayment, MonthlyIncome): string 
+            - 
+        }
     }
 
-    enum Categories {
-        + CURRENT_ACCOUNT: string
-        + SAVINGS_ACCOUNT: string
-        + TERM_DEPOSIT: string
-        + MONEY_MARKET: string
-        + CREDIT_CARD: string
-        + PERSONAL_LOANS: string
-        + PERSONAL_INVESTMENTS: string
-        + MORTGAGE: string
-        + HIRE_PURCHASE: string
-        + INSURANCE: string
-        + MICRO_LOANS: string
-        + OTHER: string
-    }
+    ' note bottom of calculateDebtServiceRatio
+    '     Debt Service Ratio (DSR):
+    '     This method calculates the Debt Service Ratio based on monthly debt payments and income.
+    '     It returns a string representing the DSR value.
 
-    struct AccountOverview {
-        + id: int
-        + current_account: list[string]
-        + saving_account: list[string]
-        + term_deposit: string
+    '     Summary of DSR Interpretations:
+    '     - <&lt; 30% &gt;: Healthy, low risk, strong financial position (Good)
+    '     - <&lt; 30% - 40% &gt;: Manageable, generally acceptable (Neutral/Acceptable)
+    '     - <&lt; > 40% &gt;: Higher debt load, increased financial strain (Risky/Bad)
+    '     - <&lt; > 50% &gt;: Financially overburdened, high risk (Very Bad)
+    ' end note
 
-    }
-
-    class FinancialAnalysis {
-        + setAccount(Categories, User): void
-        + getAccountOverview(User) 
-    }
-
-    User --o DatabaseHandler
+    User --o DatabaseHandler :model
     Categories --* FinancialAnalysis
-    Categories --o DatabaseHandler
-    AccountOverview --* FinancialAnalysis
+
+    AccountOverview --* FinancialAnalysis :aggregation
+    CreditCard --* AccountOverview :aggregation
+    PersonalLoans --* AccountOverview :aggregation
+
+    ' Functions --o Database: Align
 }
 
 package Frontend {
@@ -80,6 +117,7 @@ package Frontend {
 
     class Utilities {
         + saveLocalStorage(): void
+        + clearStorage() : void
     }
 
     struct User {
