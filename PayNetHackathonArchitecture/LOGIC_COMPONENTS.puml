@@ -75,7 +75,9 @@ package Backend {
             + setAccount(Categories, User): void
             + getAccountOverview(User): AccountOverview
             - calculateDebtServiceRatio(MonthLyDebtsPayment, MonthlyIncome): string 
-            - 
+            - calculateWarAccumulationRatio(TotalAssets, TotalLiabilities): string
+            - calculateCurrentCashflow(TotalInflow - TotalOutflow): string
+            - calculateCurrentNetWorth(TotalAssets - TotalLiabilities): string
         }
     }
 
