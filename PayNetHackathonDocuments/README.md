@@ -11,8 +11,7 @@ Welcome to the documentation for **Paynet PFM**. This document outlines the over
 3. [Logic Components](#logic-components)
 4. [How to Read the Diagrams](#how-to-read-the-diagrams)
 5. [Contributing](#contributing)
-6. [Financial Ratios Documentation](#financial-ratios-documentation) <!-- Added this new section -->
-
+6. [Financial Ratios Documentation](#financial-ratios-documentation) 
 ---
 
 ## Introduction
@@ -111,7 +110,7 @@ The **Logic Components** diagram provides a structural view of the main backend 
 
 For a comprehensive guide on **Debt Service Ratio (DSR)**, **Wealth Accumulation Ratio (WAR)**, **Net Worth**, **Cash Flow**, and other key financial metrics, refer to the detailed documentation in the following section. This will help you understand the logic behind financial analysis and how they are implemented in the **Paynet PFM** system.
 
-👉 [Financial Ratios Documentation](./FinancialRatios.md) <!-- Link to your separate Financial Ratios documentation -->
+👉 [Financial Ratios Documentation](FinancialBasics.md) 
 
 ---
 
