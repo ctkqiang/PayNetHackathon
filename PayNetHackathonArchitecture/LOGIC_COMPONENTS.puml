@@ -119,8 +119,10 @@ package Backend {
     AccountOverview --* FinancialAnalysis :aggregation
     CreditCard --* AccountOverview :aggregation
     PersonalLoans --* AccountOverview :aggregation
+    IncomeType --* Income: aggregation
+    Income --* AccountOverview :aggregation
+    FinancialStatus --* FinancialAnalysis :aggregation
 
-    ' Functions --o Database: Align
 }
 
 package Frontend {
