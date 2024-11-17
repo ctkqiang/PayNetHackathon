@@ -14,62 +14,79 @@ package Backend {
         + updateUser(User)
         + userFinancialProfile(User)
         --Getters--
-        + getUser
-        + getUserMetadata
+        + getUser: string
+        + getUserMetadata: map[string, string]
         --Setters--
-        + setName
-        + setEmail
-        + setPassword
+        + setName: void
+        + setEmail: void
+        + setPassword: void
     }
 
     struct User {
-        + name
-        + password
-        + email
+        + id: int
+        + name: string
+        + password: string
+        + email: string
+        + createdAt: Date
     }
 
     enum Categories {
-        + CURRENT_ACCOUNT: String
-        + SAVINGS_ACCOUNT: String
-        + TERM_DEPOSIT: String
-        + MONEY_MARKET: String
-        + CREDIT_CARD: String
-        + PERSONAL_LOANS: String
-        + PERSONAL_INVESTMENTS: String
-        + MORTGAGE: String
-        + HIRE_PURCHASE: String
-        + INSURANCE: String
-        + MICRO_LOANS: String
-        + OTHER: String
+        + CURRENT_ACCOUNT: string
+        + SAVINGS_ACCOUNT: string
+        + TERM_DEPOSIT: string
+        + MONEY_MARKET: string
+        + CREDIT_CARD: string
+        + PERSONAL_LOANS: string
+        + PERSONAL_INVESTMENTS: string
+        + MORTGAGE: string
+        + HIRE_PURCHASE: string
+        + INSURANCE: string
+        + MICRO_LOANS: string
+        + OTHER: string
+    }
+
+    struct AccountOverview {
+        + id: int
+        + current_account: list[string]
+        + saving_account: list[string]
+        + term_deposit: string
+
     }
 
     class FinancialAnalysis {
-        
+        + setAccount(Categories, User): void
+        + getAccountOverview(User) 
     }
 
-    User o-- DatabaseHandler
-    Categories o-- FinancialAnalysis
-    Categories o-- DatabaseHandler
+    User --o DatabaseHandler
+    Categories --* FinancialAnalysis
+    Categories --o DatabaseHandler
+    AccountOverview --* FinancialAnalysis
 }
 
 package Frontend {
     class Authentication {
-        # initAuthenticationServices
-        + register(User)
-        + requestAccountDeletion
+        # initAuthenticationServices: void
+        + register(User): bool
+        + requestAccountDeletion: void
         --Getters--
-        + getName
-        + getEmail
+        + getName: string
+        + getEmail: string
         --Setters--
-        + setName
-        + setEmail
-        + setPassword
+        + setName: void
+        + setEmail: void
+        + setPassword: void
+    }
+
+    class Utilities {
+        + saveLocalStorage(): void
     }
 
     struct User {
-        + name
-        + password
-        + email
+        + id: int
+        + name: string
+        + password: string 
+        + email: string
     }
 
     User o-- Authentication
