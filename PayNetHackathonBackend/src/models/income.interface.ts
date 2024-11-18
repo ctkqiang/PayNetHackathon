@@ -1,6 +1,7 @@
 import { IncomeType } from './income_type.enum';
 
 export interface Income {
-    id: number;
-    income_type: IncomeType
+    id: number | null;
+    income_type: IncomeType,
+    amount: number;
 }

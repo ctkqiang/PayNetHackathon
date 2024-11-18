@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 export class Security {
-    public static hashPassword(password: string): Promise<string> | null {
+    public static async hashPassword(password: string): Promise<string> {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         

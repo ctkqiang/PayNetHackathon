@@ -12,7 +12,7 @@ export class DatabaseHandler {
     private static readonly databaseUser: string = process.env.DB_USER || 'PAYNET_HACKATHON';
     private static readonly databasePassword: string = process.env.DB_PASSWORD || 'password';
 
-    private static connect(): Connection {
+    private static async connect(): Promise<Connection> {
         if (this.connection) return this.connection;
 
         // Establish connection to the database using environment variables
@@ -24,9 +24,9 @@ export class DatabaseHandler {
         });
 
         // Test the connection
-        this.connection.connect((err) => {
+        await this.connection.connect((err) => {
             if (err) {
-                console.error('Error connecting to MySQL:', err.message);
+                console.error('Error connecting to MySQL:', err);
             } else {
                 console.log('Successfully connected to MySQL database');
             }
@@ -35,24 +35,40 @@ export class DatabaseHandler {
         return this.connection;
     }
 
-    private static executeQuery(query: string, params: any[] = []): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.connect().query(query, params, (err, results) => {
-                if (err) {
-                    console.error('Error executing query:', err.message);
-                    reject(err);
-                } else {
-                    resolve(results);
-                }
+    private static async executeQuery(query: string, params: any[] = []): Promise<any> {
+        try {
+            // Await the connection and use it to execute the query
+            const connection = await this.connect();
+
+            // Use the query method and handle the result
+            return new Promise<any>((resolve, reject) => {
+                connection.execute(query, params, (err, result) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        // If the result is an OkPacket, resolve it directly
+                        if (result && (result as any).affectedRows !== undefined) {
+                            resolve(result); // OkPacket for INSERT/UPDATE
+                        } else {
+                            resolve(result); // Query result for SELECT
+                        }
+                    }
+                });
             });
-        });
+        } catch (err) {
+            console.error('Error executing query:', err);
+            throw err; 
+        }
     }
 
-    private static closeConnection(): void {
+
+
+
+    private static async  closeConnection(): Promise<void> {
         if (this.connection) {
             this.connection.end((err) => {
                 if (err) {
-                    console.error('Error closing MySQL connection:', err.message);
+                    console.error('Error closing MySQL connection:', err);
                 } else {
                     console.log('MySQL connection closed');
                 }
@@ -60,7 +76,7 @@ export class DatabaseHandler {
         }
     }
 
-    public static createUser(user: User): Promise<bool> {
+    public static async createUser(user: User): Promise<boolean> {
         const query = `
         INSERT INTO USER (NAME, EMAIL, PASSWORD, CREATEDAT) VALUES (?, ?, ?, NOW());
         `;
@@ -68,16 +84,15 @@ export class DatabaseHandler {
         const password = Security.hashPassword(user.password);
         const params = [user.name, user.email, password];
 
-        return new Promise((resolve, reject) => {
-            this.executeQuery(query, params)
-                .then((result) => {
-                    console.log(`User with email ${email} has been successfully inserted.`);
-                    resolve(true);
-                })
-                .catch((error) => {
-                    console.error('Error inserting user:', error.message);
-                    reject(false);
-                });
-        });
-    } 
+        try {
+            // Use the improved executeQuery method
+            const result = await this.executeQuery(query, params);
+            console.log(`User with email ${user.email} has been successfully inserted.`);
+            
+            return true; // User inserted successfully
+        } catch (error) {
+            console.error('Error inserting user:', error);
+            return false; // Failure to insert user
+        }
+    }
 }
