@@ -1,3 +1,7 @@
+Here’s how to reference your MySQL setup in the **README.md** at the root:
+
+---
+
 # PayNetHackathonBackend
 
 A backend service for the PayNet Hackathon, built with **Express.js** and **TypeScript** to provide robust and scalable APIs for managing personal financial data and solutions.
@@ -19,6 +23,7 @@ Before you begin, ensure you have the following installed:
 - [Node.js](https://nodejs.org/) (v16 or higher)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - [Git](https://git-scm.com/)
+- **MySQL** for database operations.
 
 ---
 
@@ -53,7 +58,11 @@ DATABASE_URL=your-database-url
 JWT_SECRET=your-jwt-secret
 ```
 
-### 4. Build the Project
+### 4. Set Up MySQL User and Database
+
+Refer to the [MySQL Setup Guide](./scripts/README.md) in the `script/` folder for instructions on setting up the database user, permissions, and connection.
+
+### 5. Build the Project
 
 Compile the TypeScript code to JavaScript:
 
@@ -67,13 +76,16 @@ or:
 yarn build
 ```
 
-### 5. Run the Project
+### 6. Run the Project
 
 - For development with hot reloading:
+
   ```bash
   npm run dev
   ```
+
   or:
+
   ```bash
   yarn dev
   ```
@@ -91,11 +103,11 @@ yarn build
 
 ## Scripts
 
-| Script        | Description                                      |
-|---------------|--------------------------------------------------|
-| `npm run dev` | Runs the app in development mode with hot reload |
-| `npm run build` | Compiles TypeScript to JavaScript              |
-| `npm start`   | Runs the compiled JavaScript code in production  |
+| Script          | Description                                      |
+| --------------- | ------------------------------------------------ |
+| `npm run dev`   | Runs the app in development mode with hot reload |
+| `npm run build` | Compiles TypeScript to JavaScript                |
+| `npm start`     | Runs the compiled JavaScript code in production  |
 
 ---
 
@@ -110,9 +122,11 @@ PayNetHackathonBackend/
 │   ├── utils/        # Utility functions
 │   └── index.ts      # Application entry point
 ├── dist/             # Compiled JavaScript output
+├── script/           # Database setup scripts
+│   ├── create_user.sql
+│   └── README.md      # MySQL setup guide
 ├── .env              # Environment configuration file
 ├── tsconfig.json     # TypeScript configuration
 ├── package.json      # Project metadata and scripts
 ```
 
----
