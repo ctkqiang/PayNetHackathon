@@ -1,9 +1,11 @@
 import { AccountOverview } from './../models/account_overview.interface';
-import { TaxBrackets } from './../models/tax_brackets.interface';
+import { TaxBracket } from './../models/tax_brackets.interface';
 
 export class FinancialAnalysis {
     private account: AccountOverview;
     private persistency: string | number;
+
+    // Static array defining Malaysian tax brackets for income tax calculation
     private static readonly TAX_BRACKETS: TaxBracket[] = [
         { min: 0, max: 5000, rate: 0 },
         { min: 5001, max: 20000, rate: 0.01 },
@@ -70,7 +72,7 @@ export class FinancialAnalysis {
      * Calculate the Debt Service Ratio (DSR) for the user.
      * This method should be implemented based on the financial formula.
      */
-    private calculateDSR(): void {
+    private static calculateDSR(): void {
         // Example formula: DebtServiceRatio = TotalDebt / TotalIncome
         const dsr = this.userLiabilities / this.account.income.amount;
         console.log('Debt Service Ratio:', dsr);
@@ -80,7 +82,7 @@ export class FinancialAnalysis {
      * Calculate the Wealth Accumulation Rate (WAR) for the user.
      * This method should be implemented based on the financial formula.
      */
-    private calculateWAR(): void {
+    private static calculateWAR(): void {
         // Example formula: WAR = (TotalAssets - TotalLiabilities) / TotalAssets
         const war = (this.userNetWorth / (this.userNetWorth + this.userLiabilities)) * 100;
         console.log('Wealth Accumulation Rate:', war);
@@ -90,7 +92,7 @@ export class FinancialAnalysis {
      * Calculate the user's current cash flow based on their current financial status.
      * This method can be expanded as needed.
      */
-    private calculateCurrentCashFlow(): void {
+    private static calculateCurrentCashFlow(): void {
         const currentCashFlow = this.userCashflow;
         console.log('Current Cash Flow:', currentCashFlow);
     }
@@ -99,7 +101,7 @@ export class FinancialAnalysis {
      * Calculate the user's current net worth based on their financial data.
      * This method can be expanded to perform a more detailed calculation.
      */
-    private calculateCurrentNetWorth(): void {
+    private static calculateCurrentNetWorth(): void {
         const currentNetWorth = this.userNetWorth;
         console.log('Current Net Worth:', currentNetWorth);
     }
@@ -108,7 +110,7 @@ export class FinancialAnalysis {
      * Calculate the persistency ratio based on user financial data and current spending.
      * @param currentSpending - The user's current spending amount.
      */
-    private calculatePersistency(currentSpending: number): void {
+    private static calculatePersistency(currentSpending: number): void {
         const totalAssets = this.userNetWorth + this.userCashflow;
         const totalDebts = this.userLiabilities + currentSpending;
 
@@ -121,7 +123,7 @@ export class FinancialAnalysis {
      * Check if the user's persistency ratio is considered good.
      * @returns A message indicating whether the persistency is good.
      */
-    private isPersistencyGood(): string {
+    private static isPersistencyGood(): string {
         const persistencyValue = parseFloat(this.persistency.toString());
 
         if (persistencyValue > 100) {
@@ -142,15 +144,20 @@ export class FinancialAnalysis {
      * @returns The total income tax payable after applying reliefs and rebates.
      */
     private static calculateMalaysianTax(income: number, reliefs: number = 0, rebates: number = 0): number {
-        // Calculate chargeable income by deducting reliefs from gross income.
-        // Ensure chargeable income is not negative by using Math.max.
+        /**
+         * Calculate chargeable income by deducting reliefs from gross income.
+         * Ensure chargeable income is not negative by using Math.max.
+         */
         const chargeableIncome = Math.max(0, income - reliefs);
+
         let tax = 0; // Initialize the tax payable to zero.
 
         // Iterate through each tax bracket to calculate the tax.
-        for (const bracket of TAX_BRACKETS) {
+        for (const bracket of this.TAX_BRACKETS) {
+
             // Check if the chargeable income exceeds the lower limit of the tax bracket.
             if (chargeableIncome > bracket.min) {
+
                 // Determine the taxable amount for the current bracket.
                 const taxableAmount = Math.min(chargeableIncome, bracket.max) - bracket.min;
 
@@ -159,8 +166,10 @@ export class FinancialAnalysis {
             }
         }
 
-        // Subtract applicable rebates from the total tax.
-        // Ensure the final tax payable is not negative by using Math.max.
+        /**
+         * Subtract applicable rebates from the total tax.
+         * Ensure the final tax payable is not negative by using Math.max.
+         */
         return Math.max(0, tax - rebates);
     }
 }
