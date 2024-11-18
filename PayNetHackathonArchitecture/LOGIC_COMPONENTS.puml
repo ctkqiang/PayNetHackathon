@@ -90,6 +90,12 @@ package Backend {
             + BANKRUPT 
         }
 
+        struct TaxBracket {
+            + min: number
+            + max: number
+            + rate: number
+        }
+
         class FinancialAnalysis {
             + setAccount(Categories, User): void
             + getAccountOverview(User): AccountOverview
@@ -98,6 +104,7 @@ package Backend {
             - calculateCurrentCashflow(TotalInflow - TotalOutflow): string
             - calculateCurrentNetWorth(TotalAssets - TotalLiabilities): string
             - calculatePersistency(Cashflow + Networth / Total Debt): string
+            - calculateTax(income, reliefs, rebates): number
         }
     }
 
@@ -122,6 +129,8 @@ package Backend {
     IncomeType --* Income: aggregation
     Income --* AccountOverview :aggregation
     FinancialStatus --* FinancialAnalysis :aggregation
+
+    TaxBracket "1..*" --> MalaysianTaxCalculator :aggregation
 
 }
 
