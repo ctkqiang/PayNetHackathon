@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Define your application service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use your existing Dockerfile
+    ports:
+      - "3000:3000"  # Expose port 3000 on the host for your application
+    environment:
+      DB_HOST: ${DB_HOST}  # Use .env variables
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # Define the MySQL service
+  mysql:
+    image: mysql:8.0  # Use MySQL version 8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # From .env file
+      MYSQL_DATABASE: ${MYSQL_DATABASE}  # From .env file
+    ports:
+      - "3306:3306"  # Expose MySQL on port 3306
+    volumes:
+      - mysql-data:/var/lib/mysql  # Persistent data storage (optional)
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

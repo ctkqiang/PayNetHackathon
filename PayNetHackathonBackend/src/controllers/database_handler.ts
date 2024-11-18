@@ -5,17 +5,62 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * @class DatabaseHandler
+ * @description Handles MySQL database operations, including establishing connections, 
+ * executing queries, and performing CRUD operations for users.
+ */
 export class DatabaseHandler {
+    /**
+     * @private
+     * @static
+     * @type {Connection}
+     * @description MySQL database connection instance.
+     */
     private static connection: Connection;
+
+    /**
+     * @private
+     * @static
+     * @type {string}
+     * @description Name of the database. Defaults to 'PFM' if not specified in environment variables.
+     */
     private static readonly databaseName: string = process.env.DB_NAME || 'PFM';
+
+    /**
+     * @private
+     * @static
+     * @type {string}
+     * @description Host of the database. Defaults to 'localhost' if not specified in environment variables.
+     */
     private static readonly databaseHost: string = process.env.DB_HOST || 'localhost';
+
+    /**
+     * @private
+     * @static
+     * @type {string}
+     * @description Database username. Defaults to 'PAYNET_HACKATHON' if not specified in environment variables.
+     */
     private static readonly databaseUser: string = process.env.DB_USER || 'PAYNET_HACKATHON';
+
+    /**
+     * @private
+     * @static
+     * @type {string}
+     * @description Database password. Defaults to 'password' if not specified in environment variables.
+     */
     private static readonly databasePassword: string = process.env.DB_PASSWORD || 'password';
 
+    /**
+     * @private
+     * @static
+     * @async
+     * @returns {Promise<Connection>}
+     * @description Establishes a connection to the MySQL database if not already connected.
+     */
     private static async connect(): Promise<Connection> {
         if (this.connection) return this.connection;
 
-        // Establish connection to the database using environment variables
         this.connection = mysql.createConnection({
             host: this.databaseHost,
             user: this.databaseUser,
@@ -23,7 +68,6 @@ export class DatabaseHandler {
             database: this.databaseName,
         });
 
-        // Test the connection
         await this.connection.connect((err) => {
             if (err) {
                 console.error('Error connecting to MySQL:', err);
@@ -35,36 +79,47 @@ export class DatabaseHandler {
         return this.connection;
     }
 
+    /**
+     * @private
+     * @static
+     * @async
+     * @param {string} query - SQL query string to execute.
+     * @param {any[]} [params=[]] - Parameters to bind in the query.
+     * @returns {Promise<any>} Result of the SQL query execution.
+     * @description Executes a MySQL query using the established connection.
+     * Throws an error if the query fails.
+     */
     private static async executeQuery(query: string, params: any[] = []): Promise<any> {
         try {
-            // Await the connection and use it to execute the query
             const connection = await this.connect();
 
-            // Use the query method and handle the result
             return new Promise<any>((resolve, reject) => {
                 connection.execute(query, params, (err, result) => {
                     if (err) {
                         reject(err);
                     } else {
-                        // If the result is an OkPacket, resolve it directly
                         if (result && (result as any).affectedRows !== undefined) {
-                            resolve(result); // OkPacket for INSERT/UPDATE
+                            resolve(result); // For INSERT/UPDATE
                         } else {
-                            resolve(result); // Query result for SELECT
+                            resolve(result); // For SELECT
                         }
                     }
                 });
             });
         } catch (err) {
             console.error('Error executing query:', err);
-            throw err; 
+            throw err;
         }
     }
 
-
-
-
-    private static async  closeConnection(): Promise<void> {
+    /**
+     * @private
+     * @static
+     * @async
+     * @returns {Promise<void>}
+     * @description Closes the MySQL database connection if it is open.
+     */
+    private static async closeConnection(): Promise<void> {
         if (this.connection) {
             this.connection.end((err) => {
                 if (err) {
@@ -76,6 +131,14 @@ export class DatabaseHandler {
         }
     }
 
+    /**
+     * @public
+     * @static
+     * @async
+     * @param {User} user - User object containing name, email, and password.
+     * @returns {Promise<boolean>} Returns `true` if the user is successfully created, `false` otherwise.
+     * @description Creates a new user in the database. Hashes the password before storing it.
+     */
     public static async createUser(user: User): Promise<boolean> {
         const query = `
         INSERT INTO USER (NAME, EMAIL, PASSWORD, CREATEDAT) VALUES (?, ?, ?, NOW());
@@ -85,14 +148,12 @@ export class DatabaseHandler {
         const params = [user.name, user.email, password];
 
         try {
-            // Use the improved executeQuery method
             const result = await this.executeQuery(query, params);
             console.log(`User with email ${user.email} has been successfully inserted.`);
-            
-            return true; // User inserted successfully
+            return true;
         } catch (error) {
             console.error('Error inserting user:', error);
-            return false; // Failure to insert user
+            return false;
         }
     }
 }
