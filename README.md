@@ -27,15 +27,15 @@ The project is organized into the following directories:
 
 ### Backend
 The backend service handles API development and core logic.
-👉 [Backend Setup Guide](./PayNetHackathonBackend/README.md)
+👉 [Backend Setup Guide](./PayNetHackathonDocuments/BackendREADME.md)
 
 ### Frontend
 The frontend handles the user interface and interactions.
-👉 [Frontend Setup Guide](./PayNetHackathonFrontend/README.md)
+👉 [Frontend Setup Guide](./PayNetHackathonDocuments/FrontEndREADME.md)
 
 ### Documentation
 Project-related documents, including reports and design specs, can be found in the `PayNetHackathonDocuments` folder.
-👉 [Project Documentation](./PayNetHackathonDocuments/README.md)
+👉 [Project Documentation](./PayNetHackathonDocuments/Documentation.md)
 
 ---
 
