@@ -77,4 +77,87 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: User Login
+ *     description: Authenticates a user using their email and password.
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         description: The user's login credentials.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             email:
+ *               type: string
+ *               format: email
+ *               description: The user's email address.
+ *               example: user@example.com
+ *             password:
+ *               type: string
+ *               format: password
+ *               description: The user's password.
+ *               example: securePassword123
+ *     responses:
+ *       201:
+ *         description: Login successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User successfully Login
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: John Doe
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       example: user@example.com
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2024-11-18T10:15:30Z
+ *       400:
+ *         description: Bad request. Invalid input data.
+ *       500:
+ *         description: Internal server error or authentication failure.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Error authenticate user
+ */
+router.post('/login', async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const user = await DatabaseHandler.getNameByEmailAndPassword(email, password);
+
+    try {
+        if (user != null) {
+            res.status(201).json({ message: 'User successfully Login', data: user});
+        }
+
+        res.status(500).json({ message: 'Error authenticate user' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+});
+
 export default router;

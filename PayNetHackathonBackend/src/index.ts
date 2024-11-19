@@ -32,9 +32,29 @@ const PORT = process.env.PORT || 3000; // Using environment variable for port
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+const log = (res: Response, method: string, endpoint: string) => {
+  console.info(`[x] Status: ${res.statusCode} | Method: [${method}] | Endpoint: ${endpoint}`);
+};
+
 // Root route for testing
+const quotes = [
+  'The only way to do great work is to love what you do.” — Steve Jobs',
+  'Success is not final, failure is not fatal: It is the courage to continue that counts.” — Winston Churchill',
+  'It always seems impossible until it’s done.” — Nelson Mandela',
+  'Believe you can and you’re halfway there.” — Theodore Roosevelt',
+  'You miss 100% of the shots you don’t take.” — Wayne Gretzky'
+];
+
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript with Express!');
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+  log(res, 'GET', '/');
+
+  res.send(`
+    <h1>Here’s a motivational quote for you:</h1>
+    <blockquote>${randomQuote}</blockquote>
+    <p>Have a great day!</p>
+  `);
 });
 
 // Authentication routes
@@ -55,5 +75,5 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`[x] Server is running on http://localhost:${PORT}`);
 });
