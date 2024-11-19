@@ -37,6 +37,10 @@ The frontend handles the user interface and interactions.
 Project-related documents, including reports and design specs, can be found in the `PayNetHackathonDocuments` folder.
 👉 [Project Documentation](./PayNetHackathonDocuments/Documentation.md)
 
+### Endpoint Documentation
+API endpoints and documentation can be found in the `url` below:
+👉 [Endpoint Documentation](https://paynethackathon.onrender.com/api/docs)
+
 ---
 
 ## Team
