@@ -2,8 +2,8 @@ import { AccountOverview } from './../models/account_overview.interface';
 import { TaxBracket } from './../models/tax_brackets.interface';
 
 export class FinancialAnalysis {
-    private account: AccountOverview;
-    private persistency: string | number;
+    private static account: AccountOverview;
+    private static persistency: string | number;
 
     // Static array defining Malaysian tax brackets for income tax calculation
     private static readonly TAX_BRACKETS: TaxBracket[] = [
@@ -171,5 +171,18 @@ export class FinancialAnalysis {
          * Ensure the final tax payable is not negative by using Math.max.
          */
         return Math.max(0, tax - rebates);
+    }
+
+    /**
+     * Checks if the user's insurance sum assured is at least 10 times their annual income.
+     * 
+     * @param annualIncome - The user's annual income.
+     * @param insuranceSumAssured - The total insurance sum assured.
+     * @returns A boolean indicating whether the insurance coverage is adequate.
+     */
+    public static isInsuranceCoverageAdequate(annualIncome: number, insuranceSumAssured: number): boolean {
+        const requiredCoverage = annualIncome * 10;
+
+        return insuranceSumAssured >= requiredCoverage;
     }
 }

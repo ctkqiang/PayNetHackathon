@@ -3,6 +3,8 @@ import { User } from './../models/user.interface';
 import mysql, { Connection } from 'mysql2';
 import dotenv from 'dotenv';
 
+
+// Initialize dotenv to load environment variables from .env file
 dotenv.config();
 
 /**
@@ -156,4 +158,44 @@ export class DatabaseHandler {
             return false;
         }
     }
+
+    /**
+     * @public
+     * @static
+     * @async
+     * @param {string} email - Email of the user to retrieve.
+     * @param {string} password - Plaintext password of the user to validate.
+     * @returns {Promise<string | null>} Returns the user's name if credentials are valid, otherwise `null`.
+     * @description Retrieves a user's name based on their email and password.
+     */
+    public static async getNameByEmailAndPassword(email: string, password: string): Promise<string | null> {
+        const query = `
+        SELECT NAME, PASSWORD
+        FROM USER 
+        WHERE EMAIL = ?;
+        `;
+
+        try {
+            const result = await this.executeQuery(query, [email]);
+
+            // If user exists, validate the password
+            if (Array.isArray(result) && result.length > 0) {
+                const userRow = result[0] as any;
+
+                // Compare the provided password with the stored hashed password
+                const isPasswordValid = await Security.verifyPassword(password, userRow.PASSWORD);
+
+                if (isPasswordValid) {
+                    return userRow.NAME; // Return the user's name
+                }
+            }
+
+            // Return null if no user is found or password is invalid
+            return null;
+        } catch (error) {
+            console.error('Error fetching user by email and password:', error);
+            throw error; // Propagate error for higher-level handling
+        }
+    }
+
 }
