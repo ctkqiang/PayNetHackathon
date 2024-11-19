@@ -198,4 +198,64 @@ export class DatabaseHandler {
         }
     }
 
+    /**
+     * @public
+     * @static
+     * @async
+     * @param {string} email - Email of the user to delete.
+     * @param {string} password - Password of the user to verify before deletion.
+     * @returns {Promise<boolean>} Returns `true` if the user is successfully deleted, `false` otherwise.
+     * @description Deletes a user from the database after verifying their password.
+     */
+    public static async deleteUser(email: string, password: string): Promise<boolean> {
+        const getPasswordQuery = `
+        SELECT PASSWORD
+        FROM USER
+        WHERE EMAIL = ?;
+        `;
+
+        try {
+            const result = await this.executeQuery(getPasswordQuery, [email]);
+
+            if (Array.isArray(result) && result.length > 0) {
+                const storedPassword = result[0].PASSWORD;
+
+                // Verify the password
+                const isPasswordValid = await Security.verifyPassword(password, storedPassword);
+
+                if (!isPasswordValid) {
+                    console.log('Password verification failed. Deletion aborted.');
+                    return false;
+                }
+            } else {
+                console.log('No user found with the provided email.');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error verifying password for user deletion:', error);
+            return false;
+        }
+
+        const deleteQuery = `
+        DELETE FROM USER
+        WHERE EMAIL = ?;
+        `;
+
+        try {
+            const deleteResult = await this.executeQuery(deleteQuery, [email]);
+
+            if (deleteResult.affectedRows > 0) {
+                console.log(`User with email ${email} has been successfully deleted.`);
+                return true;
+            } else {
+                console.log(`No user found with email ${email}.`);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            return false;
+        }
+    }
+
+    
 }

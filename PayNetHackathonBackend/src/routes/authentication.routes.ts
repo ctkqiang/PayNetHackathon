@@ -160,4 +160,69 @@ router.post('/login', async (req: Request, res: Response) => {
 
 });
 
+/**
+ * @swagger
+ * /delete/user/{email}:
+ *   delete:
+ *     summary: Delete a user by email
+ *     description: Deletes a user account from the database by their email address. The request must include the user's password for authentication.
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         description: The email of the user to be deleted.
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: password
+ *         description: The user's password for authentication.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             password:
+ *               type: string
+ *               example: "user_password123"
+ *     responses:
+ *       201:
+ *         description: User deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deleted successfully"
+ *       500:
+ *         description: Error deleting user or internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error deleting user"
+ */
+router.delete('/delete/user/:email', async (req, res) => {
+    const email = req.params.email;
+    const password = req.body.password;
+
+    const deletion = await DatabaseHandler.deleteUser(email, password);
+    
+    try {
+        if (deletion) {
+            res.status(201).json({ message: 'User deleted successfully' });
+        }
+        
+        res.status(500).json({ message: 'Error deleting user' });
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// TODO request password reset + email confirmation
+
 export default router;
