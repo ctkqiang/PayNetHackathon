@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
 import { User } from './../models/user.interface';
 import { DatabaseHandler } from './../controllers/database_handler';
@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /register:
+ * /api/auth/register:
  *   post:
  *     summary: Registers a new user
  *     description: Registers a new user in the system
@@ -31,7 +31,7 @@ const router = Router();
  *       400:
  *         description: Bad request
  */
-router.post('/register', async (req: Request, res: Response): Promise<void> => {
+router.post('/register', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { name, email, password } = req.body;
 
     // Validation for required fields
@@ -66,20 +66,27 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
         const result = await DatabaseHandler.createUser(user);
 
         if (result) {
+            console.info(`[x] POST:api/auth/register: User registered successfully`)
+
             res.status(201).json({ message: 'User registered successfully' });
+            return;
         } else {
-            res.status(500).json({ message: 'Error registering user' });
+            console.warn(`[x] POST:api/auth/register: User Already Registered`)
+
+            res.status(500).json({ message: 'User Already Registered' });
+            return;
         }
 
     } catch (error) {
-        console.error(error);
+        console.error(`[x] POST:api/auth/register: ${error}`);
         res.status(500).json({ message: 'Internal server error' });
+        next(error);
     }
 });
 
 /**
  * @swagger
- * /login:
+ * /api/auth/login:
  *   post:
  *     summary: User Login
  *     description: Authenticates a user using their email and password.
@@ -142,22 +149,99 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
  *                   type: string
  *                   example: Error authenticate user
  */
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response, next: NextFunction ) => {
     const { email, password } = req.body;
 
     const user = await DatabaseHandler.getNameByEmailAndPassword(email, password);
 
     try {
-        if (user != null) {
+        if (user) {
+            console.info(`[x] POST:api/auth/login: ${user} login successfully.`);
+
             res.status(201).json({ message: 'User successfully Login', data: user});
+            return;
         }
 
-        res.status(500).json({ message: 'Error authenticate user' });
+        res.status(401).json({ message: 'Invalid credentials or account does not exist' });
+        console.warn(`[x] POST:api/auth/login: 'Invalid credentials or account does not exist ${user}`)
+        return;
     } catch (error) {
-        console.error(error);
+        console.error(`[x] POST:api/auth/login: ${error}`);
         res.status(500).json({ message: 'Internal server error' });
+        next(error);
     }
 
 });
+
+/**
+ * @swagger
+ * /api/auth/delete/user/{email}:
+ *   delete:
+ *     summary: Delete a user by email
+ *     description: Deletes a user account from the database by their email address. The request must include the user's password for authentication.
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         description: The email of the user to be deleted.
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: password
+ *         description: The user's password for authentication.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             password:
+ *               type: string
+ *               example: "user_password123"
+ *     responses:
+ *       201:
+ *         description: User deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deleted successfully"
+ *       500:
+ *         description: Error deleting user or internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error deleting user"
+ */
+router.delete('/delete/user/:email', async (req: Request, res: Response, next: NextFunction) => {
+    const email = req.params.email;
+    const password = req.body.password;
+
+    const deletion = await DatabaseHandler.deleteUser(email, password);
+    
+    try {
+        if (deletion) {
+            console.info(`[x] DELETE:api/auth/delete/user/:email: User deleted successfully`);
+            res.status(201).json({ message: 'User deleted successfully' });
+            return;
+        }
+        
+        console.warn(`[x] DELETE:api/auth/delete/user/:email: Error deleting user`);
+
+        res.status(500).json({ message: 'Error deleting user' });
+        return;
+    } catch(error) {
+        console.error(`[x] DELETE:api/auth/delete/user/:email: ${error}`);
+        res.status(500).json({ message: 'Internal server error' });
+        next(error);
+    }
+});
+
+// TODO request password reset + email confirmation
 
 export default router;

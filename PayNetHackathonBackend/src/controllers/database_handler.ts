@@ -72,9 +72,9 @@ export class DatabaseHandler {
 
         await this.connection.connect((err) => {
             if (err) {
-                console.error('Error connecting to MySQL:', err);
+                console.error('[x] DATABASE Error connecting:', err);
             } else {
-                console.log('Successfully connected to MySQL database');
+                console.info('[x] DATABASE Successfully connected');
             }
         });
 
@@ -138,23 +138,41 @@ export class DatabaseHandler {
      * @static
      * @async
      * @param {User} user - User object containing name, email, and password.
-     * @returns {Promise<boolean>} Returns `true` if the user is successfully created, `false` otherwise.
-     * @description Creates a new user in the database. Hashes the password before storing it.
+     * @returns {Promise<boolean>} Returns `true` if the user is successfully created, `false` if the user already exists or the operation fails.
+     * @description Creates a new user in the database. Checks for existing email before inserting.
      */
     public static async createUser(user: User): Promise<boolean> {
-        const query = `
-        INSERT INTO USER (NAME, EMAIL, PASSWORD, CREATEDAT) VALUES (?, ?, ?, NOW());
+        const checkUserQuery = `
+        SELECT EMAIL
+        FROM USERS
+        WHERE EMAIL = ?;
         `;
 
-        const password = Security.hashPassword(user.password);
-        const params = [user.name, user.email, password];
+        try {
+            const existingUser = await this.executeQuery(checkUserQuery, [user.email]);
+
+            if (Array.isArray(existingUser) && existingUser.length > 0) {
+                console.log(`[X] Database: User with email ${user.email} already exists.`);
+                return false; // User already exists
+            }
+        } catch (error) {
+            console.error('Error checking for existing user:', error);
+            return false;
+        }
+
+        const insertUserQuery = `
+        INSERT INTO USERS (NAME, EMAIL, PASSWORD, CREATEDAT) VALUES (?, ?, ?, NOW());
+        `;
+
+        const hashedPassword = await Security.hashPassword(user.password);
+        const params = [user.name, user.email, hashedPassword];
 
         try {
-            const result = await this.executeQuery(query, params);
-            console.log(`User with email ${user.email} has been successfully inserted.`);
+            const result = await this.executeQuery(insertUserQuery, params);
+            console.info(`[x] Database: User with email ${user.email} has been successfully inserted.`);
             return true;
         } catch (error) {
-            console.error('Error inserting user:', error);
+            console.error('[x] Database: Error inserting user:', error);
             return false;
         }
     }
@@ -171,7 +189,7 @@ export class DatabaseHandler {
     public static async getNameByEmailAndPassword(email: string, password: string): Promise<string | null> {
         const query = `
         SELECT NAME, PASSWORD
-        FROM USER 
+        FROM USERS 
         WHERE EMAIL = ?;
         `;
 
@@ -193,9 +211,69 @@ export class DatabaseHandler {
             // Return null if no user is found or password is invalid
             return null;
         } catch (error) {
-            console.error('Error fetching user by email and password:', error);
-            throw error; // Propagate error for higher-level handling
+            console.error('[x] Database: Error fetching user by email and password:', error);
+            throw error; 
         }
     }
 
+    /**
+     * @public
+     * @static
+     * @async
+     * @param {string} email - Email of the user to delete.
+     * @param {string} password - Password of the user to verify before deletion.
+     * @returns {Promise<boolean>} Returns `true` if the user is successfully deleted, `false` otherwise.
+     * @description Deletes a user from the database after verifying their password.
+     */
+    public static async deleteUser(email: string, password: string): Promise<boolean> {
+        const getPasswordQuery = `
+        SELECT PASSWORD
+        FROM USERS
+        WHERE EMAIL = ?;
+        `;
+
+        try {
+            const result = await this.executeQuery(getPasswordQuery, [email]);
+
+            if (Array.isArray(result) && result.length > 0) {
+                const storedPassword = result[0].PASSWORD;
+
+                // Verify the password
+                const isPasswordValid = await Security.verifyPassword(password, storedPassword);
+
+                if (!isPasswordValid) {
+                    console.log('[x] Database: Password verification failed. Deletion aborted.');
+                    return false;
+                }
+            } else {
+                console.log('[x] Database: No user found with the provided email.');
+                return false;
+            }
+        } catch (error) {
+            console.error('[x] Database: Error verifying password for user deletion:', error);
+            return false;
+        }
+
+        const deleteQuery = `
+        DELETE FROM USERS
+        WHERE EMAIL = ?;
+        `;
+
+        try {
+            const deleteResult = await this.executeQuery(deleteQuery, [email]);
+
+            if (deleteResult.affectedRows > 0) {
+                console.log(`[x] Database: User with email ${email} has been successfully deleted.`);
+                return true;
+            } else {
+                console.log(`[x] Database: No user found with email ${email}.`);
+                return false;
+            }
+        } catch (error) {
+            console.error('[x] Database: Error deleting user:', error);
+            return false;
+        }
+    }
+
+    
 }
