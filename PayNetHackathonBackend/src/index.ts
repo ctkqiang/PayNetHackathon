@@ -63,15 +63,24 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Global error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);  // Logging the error for debugging
+  console.error('[x] Error captured by global error handler:', err);
 
-  // If the error is an instance of a known error, send a customized message
-  if (err instanceof Error) {
-    res.status(500).json({ message: err.message });
-  } else {
-    res.status(500).json({ message: 'Internal server error' });
-  }
+  if (res.headersSent) return next(err); // If headers have already been sent, pass the error to next middleware
+
+  res.status(500).json({ message: err.message || 'Internal server error' });
 });
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.on('finish', () => {
+    console.info(`[x] Status: ${res.statusCode} | Method: [${req.method}] | Endpoint: ${req.originalUrl}`);
+  });
+  next();
+});
+
+// const log = (req: Request, res: Response) => {
+//   console.info(`[x] Status: ${res.statusCode} | Method: [${req.method}] | Endpoint: ${req.originalUrl}`);
+// };
+
 
 // Start the server
 app.listen(PORT, () => {
