@@ -274,6 +274,5 @@ export class DatabaseHandler {
             return false;
         }
     }
-
     
 }

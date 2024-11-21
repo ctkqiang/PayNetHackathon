@@ -2,10 +2,10 @@ import { AccountOverview } from './../models/account_overview.interface';
 import { TaxBracket } from './../models/tax_brackets.interface';
 
 export class FinancialAnalysis {
-    private static account: AccountOverview;
-    private static persistency: string | number;
+    private account: AccountOverview;
+    private persistency: number;
 
-    // Static array defining Malaysian tax brackets for income tax calculation
+    // Malaysian tax brackets for income tax calculation
     private static readonly TAX_BRACKETS: TaxBracket[] = [
         { min: 0, max: 5000, rate: 0 },
         { min: 5001, max: 20000, rate: 0.01 },
@@ -22,167 +22,126 @@ export class FinancialAnalysis {
     ];
 
     /**
-     * Constructor to initialize the FinancialAnalysis with an AccountOverview.
-     * @param account - The account overview object containing user financial data.
+     * Initialize the FinancialAnalysis instance with an account overview.
+     * @param account - User's financial account overview.
      */
     public constructor(account: AccountOverview) {
         this.account = account;
-        this.persistency = 0;  // initialize persistency as a default number
+        this.persistency = 0; // Initialize persistency as 0
     }
 
+    // Derived Properties:
+
     /**
-     * Calculate the user's net worth based on their account overview.
-     * @returns The net worth calculated as total assets minus total liabilities.
+     * Total net worth = Total assets - Total liabilities.
      */
     public get userNetWorth(): number {
-        const totalAssets = this.account.total_current_account + this.account.total_saving_account + this.account.term_deposit;
-        return totalAssets - this.userLiabilities;
+        return this.totalAssets - this.userLiabilities;
     }
 
     /**
-     * Calculate the user's liabilities based on their account overview.
-     * @returns The total liabilities calculated from various accounts.
+     * Total liabilities = Credit card debt + Loans + Mortgage.
      */
     public get userLiabilities(): number {
-        const totalCreditCardDebt = this.account.credit_card.total_credit_card_limit;
-        const totalLoans = this.account.personal_loans.reduce((sum, loan) => sum + loan.loan_amount, 0);
-        const totalMortgage = this.account.mortgage;
+        const creditCardDebt = this.account.credit_card.total_credit_card_limit;
+        const loans = this.account.personal_loans.reduce((sum, loan) => sum + loan.loan_amount, 0);
+        const mortgage = this.account.mortgage;
 
-        return totalCreditCardDebt + totalLoans + totalMortgage;
+        return creditCardDebt + loans + mortgage;
     }
 
     /**
-     * Calculate the user's cash flow based on income and liabilities.
-     * @returns The cash flow based on income minus liabilities.
+     * Total assets = Current account + Savings account + Term deposit.
+     */
+    private get totalAssets(): number {
+        return this.account.total_current_account + this.account.total_saving_account + this.account.term_deposit;
+    }
+
+    /**
+     * Cashflow = Total income - Liabilities.
      */
     public get userCashflow(): number {
-        const totalCashInFlow :number = this.account.income.amount;
-        return totalCashInFlow - this.userLiabilities;
+        return this.account.income.amount - this.userLiabilities;
     }
 
     /**
-     * Set the user's financial persistency ratio.
-     * @returns The persistency ratio as a percentage.
+     * Persistency ratio as a percentage.
      */
-    public get userPersistency(): string | number {
+    public get userPersistency(): number {
         return this.persistency;
     }
 
+    // Financial Calculations:
+
     /**
-     * Calculate the Debt Service Ratio (DSR) for the user.
-     * This method should be implemented based on the financial formula.
+     * Calculate the Debt Service Ratio (DSR).
+     * DSR = Total liabilities / Total income
      */
-    private static calculateDSR(): void {
-        // Example formula: DebtServiceRatio = TotalDebt / TotalIncome
-        const dsr = this.userLiabilities / this.account.income.amount;
-        console.log('Debt Service Ratio:', dsr);
+    public calculateDSR(): number {
+        if (this.account.income.amount === 0) {
+            throw new Error('Income cannot be zero for DSR calculation.');
+        }
+        return this.userLiabilities / this.account.income.amount;
     }
 
     /**
-     * Calculate the Wealth Accumulation Rate (WAR) for the user.
-     * This method should be implemented based on the financial formula.
+     * Calculate the Wealth Accumulation Rate (WAR).
+     * WAR = Net worth / (Net worth + Liabilities)
      */
-    private static calculateWAR(): void {
-        // Example formula: WAR = (TotalAssets - TotalLiabilities) / TotalAssets
-        const war = (this.userNetWorth / (this.userNetWorth + this.userLiabilities)) * 100;
-        console.log('Wealth Accumulation Rate:', war);
-    }
-
-    /**
-     * Calculate the user's current cash flow based on their current financial status.
-     * This method can be expanded as needed.
-     */
-    private static calculateCurrentCashFlow(): void {
-        const currentCashFlow = this.userCashflow;
-        console.log('Current Cash Flow:', currentCashFlow);
-    }
-
-    /**
-     * Calculate the user's current net worth based on their financial data.
-     * This method can be expanded to perform a more detailed calculation.
-     */
-    private static calculateCurrentNetWorth(): void {
-        const currentNetWorth = this.userNetWorth;
-        console.log('Current Net Worth:', currentNetWorth);
+    public calculateWAR(): number {
+        const totalWealth = this.userNetWorth + this.userLiabilities;
+        return totalWealth ? (this.userNetWorth / totalWealth) * 100 : 0; // Avoid division by zero
     }
 
     /**
      * Calculate the persistency ratio based on user financial data and current spending.
-     * @param currentSpending - The user's current spending amount.
+     * @param currentSpending - The user's current spending.
      */
-    private static calculatePersistency(currentSpending: number): void {
-        const totalAssets = this.userNetWorth + this.userCashflow;
-        const totalDebts = this.userLiabilities + currentSpending;
+    public calculatePersistency(currentSpending: number): number {
+        const totalDebt = this.userLiabilities + currentSpending;
+        if (totalDebt === 0) {
+            throw new Error('Total debt cannot be zero for persistency calculation.');
+        }
 
-        // Persistency ratio formula
-        const persistencyRatio = totalAssets / totalDebts;
-        this.persistency = (persistencyRatio * 100).toFixed(2);  // Convert to percentage
+        const totalAssets = this.userNetWorth + this.userCashflow;
+        this.persistency = (totalAssets / totalDebt) * 100; // Persistency as a percentage
+        return this.persistency;
     }
 
     /**
-     * Check if the user's persistency ratio is considered good.
-     * @returns A message indicating whether the persistency is good.
+     * Check if the persistency ratio indicates financial health.
      */
-    private static isPersistencyGood(): string {
-        const persistencyValue = parseFloat(this.persistency.toString());
-
-        if (persistencyValue > 100) {
+    public isPersistencyGood(): string {
+        if (this.persistency > 100) {
             return 'Good Persistency: You have more assets than debts.';
-        } else if (persistencyValue >= 75) {
-            return 'Warning: Your persistency ratio is in a safe zone, but could be improved.';
+        } else if (this.persistency >= 75) {
+            return 'Warning: Your persistency is in a safe zone but could improve.';
         } else {
             return 'Poor Persistency: You may be over-leveraged.';
         }
     }
 
     /**
-     * Calculates Malaysian income tax based on the given income, reliefs, and rebates.
-     *
-     * @param income - The gross annual income of the individual.
-     * @param reliefs - Total amount of applicable reliefs (e.g., EPF, personal relief).
-     * @param rebates - Total amount of applicable rebates (e.g., zakat, tax rebates).
-     * @returns The total income tax payable after applying reliefs and rebates.
+     * Calculate Malaysian income tax based on income, reliefs, and rebates.
      */
-    private static calculateMalaysianTax(income: number, reliefs: number = 0, rebates: number = 0): number {
-        /**
-         * Calculate chargeable income by deducting reliefs from gross income.
-         * Ensure chargeable income is not negative by using Math.max.
-         */
+    public static calculateMalaysianTax(income: number, reliefs: number = 0, rebates: number = 0): number {
         const chargeableIncome = Math.max(0, income - reliefs);
+        let tax = 0;
 
-        let tax = 0; // Initialize the tax payable to zero.
-
-        // Iterate through each tax bracket to calculate the tax.
         for (const bracket of this.TAX_BRACKETS) {
-
-            // Check if the chargeable income exceeds the lower limit of the tax bracket.
             if (chargeableIncome > bracket.min) {
-
-                // Determine the taxable amount for the current bracket.
                 const taxableAmount = Math.min(chargeableIncome, bracket.max) - bracket.min;
-
-                // Calculate the tax for the current bracket and add it to the total tax.
                 tax += taxableAmount * bracket.rate;
             }
         }
 
-        /**
-         * Subtract applicable rebates from the total tax.
-         * Ensure the final tax payable is not negative by using Math.max.
-         */
-        return Math.max(0, tax - rebates);
+        return Math.max(0, tax - rebates); // Tax payable cannot be negative
     }
 
     /**
-     * Checks if the user's insurance sum assured is at least 10 times their annual income.
-     * 
-     * @param annualIncome - The user's annual income.
-     * @param insuranceSumAssured - The total insurance sum assured.
-     * @returns A boolean indicating whether the insurance coverage is adequate.
+     * Check if insurance coverage is sufficient (>=10x annual income).
      */
     public static isInsuranceCoverageAdequate(annualIncome: number, insuranceSumAssured: number): boolean {
-        const requiredCoverage = annualIncome * 10;
-
-        return insuranceSumAssured >= requiredCoverage;
+        return insuranceSumAssured >= annualIncome * 10;
     }
 }
