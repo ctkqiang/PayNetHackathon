@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
 import authentication from './routes/authentication.routes';
+import mock_data from './routes/mock_data.routes';
 
 // Initialize dotenv to load environment variables from .env file
 dotenv.config();
@@ -57,8 +58,8 @@ app.get('/', (req: Request, res: Response) => {
   `);
 });
 
-// Authentication routes
 app.use('/api/auth', authentication);
+app.use('/api/mock', mock_data);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Global error handling middleware
@@ -76,11 +77,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   });
   next();
 });
-
-// const log = (req: Request, res: Response) => {
-//   console.info(`[x] Status: ${res.statusCode} | Method: [${req.method}] | Endpoint: ${req.originalUrl}`);
-// };
-
 
 // Start the server
 app.listen(PORT, () => {
