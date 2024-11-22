@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
   final String? name;
+
   const MainPage({super.key, this.name});
 
   @override
