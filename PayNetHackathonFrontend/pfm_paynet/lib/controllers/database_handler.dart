@@ -232,6 +232,7 @@ class DatabaseHandler {
         transactionData,
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
+
       logger.d('Transaction inserted successfully: $transactionData');
     } catch (e) {
       logger.e('Error inserting transaction: $e');

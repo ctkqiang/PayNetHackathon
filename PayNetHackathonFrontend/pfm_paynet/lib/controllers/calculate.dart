@@ -5,12 +5,16 @@ class Calculate {
 
   Calculate.create() : this._();
 
-  int getCasflow() {
-    return 0;
+  double getCasflow({double? totalInflow, double? totalOutflow}) {
+    return totalInflow! + totalOutflow!;
   }
 
-  int getNetworth() {
-    return 0;
+  double getDSR({double? totalDebtsPayments, double? monthlyIncome}) {
+    return (totalDebtsPayments! / monthlyIncome!);
+  }
+
+  double getNetworth({double? totalAssets, double? totalLiabilities}) {
+    return totalAssets! - totalLiabilities!;
   }
 
   Map<String, FinancialCategory> getFinCat() {
@@ -45,5 +49,18 @@ class Calculate {
     }
 
     return financialCategories;
+  }
+
+  String evaluateDSR(double dsr) {
+    switch (dsr) {
+      case double n when (n < 30):
+        return 'Healthy, low risk, strong financial position (Good)';
+      case double n when (n >= 30 && n <= 40):
+        return 'Manageable, generally acceptable (Neutral/Acceptable)';
+      case double n when (n > 40 && n <= 50):
+        return 'Higher debt load, increased financial strain (Risky/Bad)';
+      default:
+        return 'Financially overburdened, high risk (Very Bad)';
+    }
   }
 }
