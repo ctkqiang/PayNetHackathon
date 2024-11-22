@@ -1,3 +1,4 @@
+import 'package:get_storage/get_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:pfm_paynet/models/user.model.dart';
 import 'package:sqflite/sqflite.dart';
@@ -9,6 +10,8 @@ class DatabaseHandler {
 
   // Logger instance for logging messages
   final logger = Logger();
+
+  final localStorage = GetStorage();
 
   // Database name
   final databaseName = 'pfm.db';
@@ -232,6 +235,20 @@ class DatabaseHandler {
       logger.d('Transaction inserted successfully: $transactionData');
     } catch (e) {
       logger.e('Error inserting transaction: $e');
+    }
+  }
+
+  void saveLocal(String baseKey, int index, String item) {
+    localStorage.write('$baseKey$index', item);
+  }
+
+  String? readLocal(String baseKey, int index) {
+    return localStorage.read('$baseKey$index');
+  }
+
+  void saveChoices(String baseKey, List<String> items) {
+    for (int i = 0; i < items.length; i++) {
+      saveLocal(baseKey, i, items[i]);
     }
   }
 }
