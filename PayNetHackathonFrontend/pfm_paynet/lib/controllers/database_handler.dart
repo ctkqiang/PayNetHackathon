@@ -206,4 +206,32 @@ class DatabaseHandler {
       logger.e('Error inserting mock transactions: $e');
     }
   }
+
+  // Insert a single transaction into the EXPENSES table
+  Future<void> insertTransaction(
+    Database db, {
+    required int accountId,
+    required int categoryId,
+    required double amount,
+    String? description,
+  }) async {
+    try {
+      final transactionData = {
+        'ACCOUNT_ID': accountId,
+        'CATEGORY_ID': categoryId,
+        'AMOUNT': amount,
+        'DESCRIPTION': description ?? '',
+        'TRANSACTION_DATE': DateTime.now().toString(),
+      };
+
+      await db.insert(
+        'EXPENSES',
+        transactionData,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      logger.d('Transaction inserted successfully: $transactionData');
+    } catch (e) {
+      logger.e('Error inserting transaction: $e');
+    }
+  }
 }
