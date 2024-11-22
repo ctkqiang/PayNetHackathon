@@ -78,6 +78,12 @@ class _SetupPageState extends State<SetupPage>
           // Save each option as a key with its state (true/false)
           databaseHandler.localStorage.write(optionKey, isSelected);
 
+          final userOptions = databaseHandler.localStorage.read(optionKey);
+
+          if (userOptions.toString().isNotEmpty) {
+            Navigator.pushReplacementNamed(context, '/main');
+          }
+
           logger.i(
             '${isSelected ? "Selected" : "Unselected"}: $optionKey saved to local storage.',
           );

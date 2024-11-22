@@ -14,7 +14,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(),
+      body: Center(
+        child: Text('Main_page'),
+      ),
     );
   }
 }
