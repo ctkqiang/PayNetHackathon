@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
   final String? name;
+
   const MainPage({super.key, this.name});
 
   @override
@@ -13,7 +14,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(),
+      body: Center(
+        child: Text('Main_page'),
+      ),
     );
   }
 }
