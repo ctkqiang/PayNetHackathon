@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:pfm_paynet/controllers/database_handler.dart';
+import 'package:pfm_paynet/views/widgets/animated_snackbar.widget.dart';
 
 class SetupPage extends StatefulWidget {
   final String? name;
@@ -43,6 +44,7 @@ class _SetupPageState extends State<SetupPage>
   };
 
   List<bool> _selectedOptions = [];
+  List<String> selected = [];
   AnimationController? _animationController;
   List<Animation<double>> _fadeAnimations = [];
   List<Animation<Offset>> _slideAnimations = [];
@@ -58,8 +60,6 @@ class _SetupPageState extends State<SetupPage>
           logger.i('${choices! ? "Selected" : "Unselected"}: $optionName');
         }
 
-        List<String> selected = [];
-
         for (int i = 0; i < _selectedOptions.length; i++) {
           if (_selectedOptions[i]) selected.add(options.keys.elementAt(i));
         }
@@ -70,26 +70,57 @@ class _SetupPageState extends State<SetupPage>
   Future<void> setUserPreferences() async {
     if (super.mounted) {
       try {
-        for (int i = 0; i < _selectedOptions.length; i++) {
-          // Get the option key and its selection state
-          String optionKey = options.keys.elementAt(i);
-          bool isSelected = _selectedOptions[i];
+        selected.removeRange(0, 1);
 
-          // Save each option as a key with its state (true/false)
-          databaseHandler.localStorage.write(optionKey, isSelected);
+        // Count the number of selected options
+        int selectedCount =
+            _selectedOptions.where((isSelected) => isSelected).length;
 
-          final userOptions = databaseHandler.localStorage.read(optionKey);
-
-          if (userOptions.toString().isNotEmpty) {
-            Navigator.pushReplacementNamed(context, '/main');
+        if (kDebugMode) {
+          if (selected.isEmpty) {
+            logger.e('[x] Selected Choices: None');
           }
 
-          logger.i(
-            '${isSelected ? "Selected" : "Unselected"}: $optionKey saved to local storage.',
+          logger.d('[x] Selected Choices: $selected');
+        }
+
+        if (selectedCount >= 2 || selectedCount != 0) {
+          // Save selected choices into localStorage
+          databaseHandler.localStorage.write('choices', selected);
+
+          for (int i = 0; i < _selectedOptions.length; i++) {
+            // Get the option key and its selection state
+            String optionKey = options.keys.elementAt(i);
+            bool isSelected = _selectedOptions[i];
+
+            // Save each option as a key with its state (true/false)
+            databaseHandler.localStorage.write(optionKey, isSelected);
+
+            final userOptions = databaseHandler.localStorage.read(optionKey);
+
+            if (userOptions.toString().isNotEmpty) {
+              Navigator.pushReplacementNamed(context, '/main');
+            }
+
+            logger.i(
+              '${isSelected ? "Selected" : "Unselected"}: $optionKey saved to local storage.',
+            );
+          }
+        } else {
+          showCustomSnackBar(
+            context,
+            "Please select at least 2 options to proceed.",
           );
         }
       } catch (e) {
         logger.e("Error saving preferences: $e");
+
+        if (e.toString().contains('Invalid value: Only valid value is 0: 1')) {
+          showCustomSnackBar(
+            context,
+            "Please select at least 2 options to proceed.",
+          );
+        }
       } finally {
         logger.i('All preferences saved to local storage.');
       }
@@ -202,7 +233,12 @@ class _SetupPageState extends State<SetupPage>
                         ),
                         child: Card(
                           elevation: 2,
+                          borderOnForeground: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                           child: ListTile(
+                            enableFeedback: true,
                             leading: CircleAvatar(
                               radius: 20,
                               child: Icon(

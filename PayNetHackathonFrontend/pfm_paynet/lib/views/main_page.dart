@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pfm_paynet/controllers/database_handler.dart';
 
 class MainPage extends StatefulWidget {
   final String? name;
@@ -10,12 +11,24 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final databaseHandler = DatabaseHandler.create();
+
+  late List<String> choices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    super.setState(() {
+      choices = databaseHandler.localStorage.read('choices');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: Text('Main_page'),
+        child: Text(choices.toString()),
       ),
     );
   }
