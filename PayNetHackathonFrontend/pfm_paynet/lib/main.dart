@@ -18,6 +18,17 @@ class PFM extends StatelessWidget {
       title: appName,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigoAccent),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            iconColor: MaterialStatePropertyAll(
+              ColorScheme.fromSeed(seedColor: Colors.indigoAccent).primary,
+            ),
+          ),
+        ),
+        iconTheme: IconThemeData(
+            color: ColorScheme.fromSeed(
+          seedColor: Colors.indigoAccent.shade100,
+        ).primary),
         useMaterial3: true,
       ),
       initialRoute: '/splash',

@@ -1,0 +1,4 @@
+enum FinancialCategory {
+  assets,
+  liabilities,
+}
