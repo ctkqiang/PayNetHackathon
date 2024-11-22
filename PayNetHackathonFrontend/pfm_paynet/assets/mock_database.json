@@ -1,0 +1,52 @@
+[
+  {
+    "EXPENSE_ID": 1,
+    "ACCOUNT_ID": 1,
+    "CATEGORY_ID": 2,
+    "AMOUNT": 50.00,
+    "DESCRIPTION": "Groceries at Tesco",
+    "TRANSACTION_DATE": "2024-11-20T14:30:00Z",
+    "CREATEDAT": "2024-11-20T14:30:00Z",
+    "UPDATEDAT": "2024-11-20T14:30:00Z"
+  },
+  {
+    "EXPENSE_ID": 2,
+    "ACCOUNT_ID": 1,
+    "CATEGORY_ID": 3,
+    "AMOUNT": 20.00,
+    "DESCRIPTION": "Grab ride to KL Sentral",
+    "TRANSACTION_DATE": "2024-11-21T08:00:00Z",
+    "CREATEDAT": "2024-11-21T08:00:00Z",
+    "UPDATEDAT": "2024-11-21T08:00:00Z"
+  },
+  {
+    "EXPENSE_ID": 3,
+    "ACCOUNT_ID": 2,
+    "CATEGORY_ID": 4,
+    "AMOUNT": 150.00,
+    "DESCRIPTION": "Dinner at Nasi Kandar Pelita",
+    "TRANSACTION_DATE": "2024-11-18T19:00:00Z",
+    "CREATEDAT": "2024-11-18T19:00:00Z",
+    "UPDATEDAT": "2024-11-18T19:00:00Z"
+  },
+  {
+    "EXPENSE_ID": 4,
+    "ACCOUNT_ID": 3,
+    "CATEGORY_ID": 5,
+    "AMOUNT": 50.00,
+    "DESCRIPTION": "Petrol refill at Petronas",
+    "TRANSACTION_DATE": "2024-11-19T10:00:00Z",
+    "CREATEDAT": "2024-11-19T10:00:00Z",
+    "UPDATEDAT": "2024-11-19T10:00:00Z"
+  },
+  {
+    "EXPENSE_ID": 5,
+    "ACCOUNT_ID": 2,
+    "CATEGORY_ID": 6,
+    "AMOUNT": 200.00,
+    "DESCRIPTION": "Monthly Netflix subscription",
+    "TRANSACTION_DATE": "2024-11-15T09:00:00Z",
+    "CREATEDAT": "2024-11-15T09:00:00Z",
+    "UPDATEDAT": "2024-11-15T09:00:00Z"
+  }
+]
