@@ -32,7 +32,20 @@ class _SetupPageState extends State<SetupPage>
         'Investments are assets bought with the expectation of earning a return.'
   };
 
-  // List to store whether each option is selected or not
+  // Map of options to their icons
+  final Map<String, IconData> optionIcons = {
+    'Expenses': Icons.money_off,
+    'Income': Icons.attach_money,
+    'Debts': Icons.credit_card,
+    'Cashflow': Icons.compare_arrows,
+    'Net Worth': Icons.pie_chart,
+    'Persistency Ratio': Icons.percent,
+    'Wealth Accumulation Ratio': Icons.savings,
+    'Emergency Funds': Icons.health_and_safety,
+    'Insurances': Icons.security,
+    'Investments': Icons.trending_up,
+  };
+
   List<bool> _selectedOptions = [];
   AnimationController? _animationController;
   List<Animation<double>> _fadeAnimations = [];
@@ -147,10 +160,13 @@ class _SetupPageState extends State<SetupPage>
                       child: Card(
                         elevation: 2,
                         child: ListTile(
-                          leading: Checkbox(
-                            value: _selectedOptions[index],
-                            onChanged: (bool? value) => setState(
-                                () => _selectedOptions[index] = value ?? false),
+                          leading: CircleAvatar(
+                            radius: 16,
+                            child: Icon(
+                              optionIcons[
+                                  optionKey], // Display the corresponding icon
+                              size: 20,
+                            ),
                           ),
                           title: Text(
                             optionKey,
@@ -158,6 +174,11 @@ class _SetupPageState extends State<SetupPage>
                           ),
                           subtitle:
                               Text(explanation), // Display the explanation
+                          trailing: Checkbox(
+                            value: _selectedOptions[index],
+                            onChanged: (bool? value) => setState(
+                                () => _selectedOptions[index] = value ?? false),
+                          ),
                           contentPadding:
                               const EdgeInsets.symmetric(horizontal: 16),
                         ),
