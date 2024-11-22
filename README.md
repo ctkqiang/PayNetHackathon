@@ -1,5 +1,13 @@
 # PayNetHackathon
 
+## Message from Code-Owners
+Initially, our team planned to develop this app for the hackathon with more comprehensive solutions for both the backend and frontend. However, during the hackathon, we learned that there were no restrictions, and the use of mock data was allowed. Moreover, the app needed to be built quickly. As a result, we decided to transition everything to local storage, simulating the presence of a backend server.
+
+**Disclaimer: This repository is open-sourced to demonstrate how we approached and solved the challenge. While you are welcome to draw inspiration from our solution, we strongly advise against directly copying any part of this project, especially for the JomHack Hackathon. Any violation of this rule may lead to disqualification, and we will not be held responsible for such actions.**
+
+We encourage you to use this repository as a reference or source of inspiration, but remember, copying the work directly could result in disqualification if discovered by the organizers.
+
+
 ## Overview
 
 This project is part of the **PayNet Hackathon**, focusing on **Personal Financial Management (PFM)**.
