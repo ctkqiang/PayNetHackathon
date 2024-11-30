@@ -1,6 +1,4 @@
-Here’s a comprehensive README template for your financial metrics, including **Debt Service Ratio (DSR)**, **Wealth Accumulation Ratio (WAR)**, **Net Worth**, and **Cash Flow**. This documentation will help juniors and team members understand these key financial metrics and how to calculate and interpret them.
 
----
 
 # Financial Metrics Overview
 
